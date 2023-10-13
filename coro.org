@@ -1,0 +1,31 @@
+#+title: Coro
+
+(introduction)
+
+* Coroutines in C
+
+Coroutines are quite easy to implement. By keeping a separate stack for each coroutine it's easy to switch between them.
+
+I will use C for simplicity. No name mangling, good support for inline assembly. The implementation will be platform dependent.
+
+* Calling a function from assembly
+
+Calling a coroutine will be similar to calling a function. The only difference is that we need to switch out the stack and set up the coroutine return vector.
+
+On Linux we use the [[https://www.uclibc.org/docs/psABI-x86_64.pdf][System V AMD64 ABI]]. More digestible information can be found at [[https://wiki.osdev.org/Calling_Conventions][OS Dev - Wiki - Calling Conventions]].
+
+** Basic rundown of the calling convention
+
+Parameters are passed in ~rdi~, ~rsi~, ~rdx~, ~rcx~, ~r8~, and ~r9~. Return values are in ~rax~, ~rdx~. The stack needs to be 16-byte aligned. The registers ~rbx~, ~rsp~, ~rbp~, ~r12~, ~r13~, ~r14~, ~r15~ are to be preserved by the callee.
+
+Calling a function with two arguments where the address of the function is stored in ~rax~.
+#+begin_src asm
+    mov rdi,8
+    mov rsi, 13
+    call rax
+#+end_src
+Remember, the result of the funciton call will be in ~rax~.
+
+** Some assembly pitfalls
+
+Make sure which dialect you're using. ~gcc~ defaults to AT&T syntax while Intel syntax is getting more popular. Use the flag ~-masm=intel~ to use Intel syntax. If you do it wrong you will get strange errors.
