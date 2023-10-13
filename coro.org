@@ -24,8 +24,51 @@ Calling a function with two arguments where the address of the function is store
     mov rsi, 13
     call rax
 #+end_src
-Remember, the result of the funciton call will be in ~rax~.
+Remember, the result of the function call will be in ~rax~.
+
+** Creating an assembly function that can call a function pointer
+
+In addition to calling a function similar to above we also need to create a working function.
+
+#+begin_src asm
+call_pointer:
+    ;; Arguments:
+    ;;   rdi: function pointer to call
+    ;;   rsi: pointer to state, passed to function
+
+    ;; store function pointer
+    mov rax, rdi
+
+    ;; Call funtion pointer passsing state
+    mov rdi, rsi
+    call rax
+
+    ret
+#+end_src
+
+** Coroutines
+
+For a coroutine we need to create a new stack and replace the stack pointer with a pointer to this stack instead.
+
+*** Caller API
+#+begin_src c
+// Create coroutine
+Coro* coro_create(void(*func)(void*), void* data);
+void coro_destroy(Coro* coro);
+
+// Start or continue coroutine
+CoroResult coro_continue(Coro* coro);
+#+end_src
+*** Callee API
+#+begin_src c
+// Yield execution to caller
+void coro_yield();
+#+end_src
+
+When finished the coroutine function can simply return.
 
 ** Some assembly pitfalls
 
 Make sure which dialect you're using. ~gcc~ defaults to AT&T syntax while Intel syntax is getting more popular. Use the flag ~-masm=intel~ to use Intel syntax. If you do it wrong you will get strange errors.
+
+Is it good idea to use inline assembly? Might be easier, and safer, to use separate assembly functions. Then we just need to respect the calling conventions of the platform.
