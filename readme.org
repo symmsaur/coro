@@ -8,7 +8,16 @@ Note: This is an experiment. Not suitable for any use.
 
 Coroutines are quite easy to implement. By keeping a separate stack for each coroutine it's easy to switch between them.
 
-We will use C for simplicity. No name mangling, good support for inline assembly. This implementation is for AMD64 Linux.
+We use C for simplicity. No name mangling and standard calling conventions. This implementation is for AMD64 Linux.
+
+* Running
+
+You will need a C compiler (~gcc~ is tested, ~clang~ is probably ok), ~make~, and ~nasm~.
+
+#+begin_src bash
+make
+build/test_coro
+#+end_src
 
 * Calling a function from assembly
 
