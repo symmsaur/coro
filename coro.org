@@ -2,11 +2,13 @@
 
 Coroutines are neat.
 
+Note: This is an experiment. Not suitable for any use.
+
 * Coroutines in C
 
 Coroutines are quite easy to implement. By keeping a separate stack for each coroutine it's easy to switch between them.
 
-I will use C for simplicity. No name mangling, good support for inline assembly. The implementation will be platform dependent.
+We will use C for simplicity. No name mangling, good support for inline assembly. This implementation is for AMD64 Linux.
 
 * Calling a function from assembly
 
@@ -53,39 +55,44 @@ For a coroutine we need to create a new stack and replace the stack pointer with
 *** Caller API
 #+begin_src c
 // Create coroutine
-Coro* coro_create(void(*func)(void*), void* data);
+Coro* coro_create();
+// Destroy coroutine
 void coro_destroy(Coro* coro);
 
-// Start or continue coroutine
-CoroResult coro_continue(Coro* coro);
+void coro_start(Coro* coro, void(*func)(void*, void*), void* data);
+// Continue coroutine
+void coro_continue(Coro* coro);
 #+end_src
 *** Callee API
 #+begin_src c
 // Yield execution to caller
-void coro_yield();
+void coro_yield(void* ctx);
 #+end_src
 
-When finished the coroutine function can simply return.
+Coroutines are not allowed to return, they must use ~coro_yield~.
+
+Don't reuse the same Coro struct for two subsequent ~coro_start~.
 
 *** Calling into a coroutine
 
 The flow when first calling a coroutine will be:
 1. Set up arguments, stack in ~coro_start~.
 2. Jump into coroutine function.
-3. Call ~coro_yield~.
-4. Jump back to ~coro_start~.
-5. Return
+3. Run inside coroutine.
+4. Call ~coro_yield~.
+5. Restore stack.
+6. Return as from ~coro_start~.
 
 When continuing it is similar:
 1. Set up stack in ~coro_continue~.
-2. Jump back into ~coro_yield~.
-3. Return from ~coro_yield~ to coroutine function.
+2. Return as from ~coro_yield~.
+3. Run inside coroutine.
 4. Call ~coro_yield~.
-5. Jump back to ~coro_continue~.
-6. Return
+5. Restore stack.
+6. Return as from ~coro_continue~.
 
 ** Some assembly pitfalls
 
 Make sure which dialect you're using. ~gcc~ defaults to AT&T syntax while Intel syntax is getting more popular. Use the flag ~-masm=intel~ to use Intel syntax. If you do it wrong you will get strange errors.
 
-Is it good idea to use inline assembly? Might be easier, and safer, to use separate assembly functions. Then we just need to respect the calling conventions of the platform.
+Using separate assembly routines is easier than inline assembly. Only the calling convention must be upheld, no need to worry about other registers etc. that could get clobbered.
