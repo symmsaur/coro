@@ -4,7 +4,6 @@ typedef struct Coro {
     void* stack_pointer;
     void(*func)(void*, void*);
     void* data;
-    void* other_stack_pointer;
     void* stack;
 } Coro;
 

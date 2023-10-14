@@ -1,22 +1,22 @@
-
     section .text
     global coro_start
 ;;; Start coroutine
 ;;; Arguments:
 ;;;   rdi: Pointer to Coro struct
 coro_start:
-    ;; To be able to restore later
+    ;; Push registers to be able to restore
     push rbp
+
+    ;; Swap stack pointers
+    mov rax, [rdi]
+    mov [rdi], rsp
+    mov rsp, rax
 
     ;; store function pointer
     mov rax, [rdi+8]
     ;; Call funtion pointer passsing state
     ;; Coro.data is at coro+16
     mov rsi, [rdi+16]
-    ;; Store our stack pointer to enable restoring it
-    mov [rdi+24], rsp
-    ;; Restore coroutine stack pointer
-    mov rsp, [rdi]
     call rax
 
     global coro_continue
@@ -27,10 +27,11 @@ coro_continue:
     ;; To be able to restore later
     push rbp
 
-    ;; Store our stack pointer to enable restoring it
-    mov [rdi+24], rsp
-    ;; Restore coroutine stack pointer
-    mov rsp, [rdi]
+    ;; Swap stack pointers
+    mov rax, [rdi]
+    mov [rdi], rsp
+    mov rsp, rax
+
     ;; Restore registers from coroutine stack
     pop rbp
     ;; Return (out of coro_yield basically)
@@ -43,10 +44,12 @@ coro_continue:
 coro_yield:
     ;; Push registers to be able to restore
     push rbp
-    ;; Store the stack pointer to be able to resume the coroutine
+
+    ;; Swap stack pointers
+    mov rax, [rdi]
     mov [rdi], rsp
-    ;; Restore original stack pointer
-    mov rsp, [rdi+24]
-    ;; Restore registers
+    mov rsp, rax
+
+    ;; Restore registers from caller stack
     pop rbp
     ret
