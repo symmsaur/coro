@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdio.h>
 
 #include "coro.h"
@@ -10,9 +11,12 @@ void generator(void* ctx, void* output_raw) {
       *(int*)output_raw = i;
       coro_yield(ctx);
     }
+    /* FIXME: Segfaults when adding this! */
+    /* printf("Generator finished\n"); */
 }
 
-int main() {
+void test_generator() {
+    printf("Test generator\n");
     int value = 10;
     Coro* coro = coro_create();
     int res = 1;
@@ -20,6 +24,11 @@ int main() {
     {
         printf("Got value from generator %i\n", value);
     }
+    assert(value == 4);
     coro_destroy(coro);
-    return value;
+}
+
+int main() {
+    test_generator();
+    return 0;
 }
