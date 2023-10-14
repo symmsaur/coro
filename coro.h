@@ -2,8 +2,6 @@
 
 typedef struct Coro {
     void* stack_pointer;
-    void(*func)(void*, void*);
-    void* data;
     void* stack;
 } Coro;
 
@@ -13,10 +11,10 @@ typedef enum CoroResult {
 } CoroResult;
 
 // Create coroutine
-Coro* coro_create(void(*func)(void*, void*), void* data);
+Coro* coro_create();
 void coro_destroy(Coro* coro);
 
-CoroResult coro_start(Coro* coro);
+CoroResult coro_start(Coro* coro, void(*func)(void*, void*), void* data);
 // Continue coroutine
 CoroResult coro_continue(Coro* coro);
 

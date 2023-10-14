@@ -15,8 +15,8 @@ void generator(void* ctx, void* output_raw) {
 
 int main() {
     int value = 10;
-    Coro* coro = coro_create(&generator, (void*)&value);
-    coro_start(coro);
+    Coro* coro = coro_create();
+    coro_start(coro, &generator, (void*)&value);
     printf("Got value from generator %i\n", value);
     for (int i = 0; i < 10; i++)
     {

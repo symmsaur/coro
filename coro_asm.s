@@ -2,7 +2,9 @@
     global coro_start
 ;;; Start coroutine
 ;;; Arguments:
-;;;   rdi: Pointer to Coro struct
+;;;   rdi: coro - Pointer to Coro struct
+;;;   rsi: func - Function pointer
+;;;   rdx: data - Function data
 coro_start:
     ;; Push registers to caller stack to be able to restore when yielding.
     push rbp
@@ -13,10 +15,9 @@ coro_start:
     mov rsp, rax
 
     ;; Set up call to coroutine function.
-    ;; Function pointer in coro+8
-    mov rax, [rdi+8]
-    ;; Coro.data is at coro+16
-    mov rsi, [rdi+16]
+    ;; void func(void* ctx, void* data)
+    mov rax, rsi
+    mov rsi, rdx
     call rax
     ;; Returning happens from coro_yield.
 
