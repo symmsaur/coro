@@ -5,10 +5,9 @@
 void generator(void* ctx, void* output_raw) {
     printf("In generator\n");
     int value = 0;
-    while (1) {
-      value += 7;
-      *(int*)output_raw = value;
-      printf("Generator yielded value %i\n", value);
+    for (int i = 0; i < 5; i++)
+    {
+      *(int*)output_raw = i;
       coro_yield(ctx);
     }
 }
@@ -16,11 +15,9 @@ void generator(void* ctx, void* output_raw) {
 int main() {
     int value = 10;
     Coro* coro = coro_create();
-    coro_start(coro, &generator, (void*)&value);
-    printf("Got value from generator %i\n", value);
-    for (int i = 0; i < 10; i++)
+    int res = 1;
+    for (coro_start(coro, &generator, (void*)&value); res ; res = coro_continue(coro))
     {
-        coro_continue(coro);
         printf("Got value from generator %i\n", value);
     }
     coro_destroy(coro);

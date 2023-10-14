@@ -68,9 +68,9 @@ Coro* coro_create();
 // Destroy coroutine
 void coro_destroy(Coro* coro);
 
-void coro_start(Coro* coro, void(*func)(void*, void*), void* data);
+int coro_start(Coro* coro, void(*func)(void*, void*), void* data);
 // Continue coroutine
-void coro_continue(Coro* coro);
+int coro_continue(Coro* coro);
 #+end_src
 *** Callee API
 #+begin_src c
@@ -78,9 +78,9 @@ void coro_continue(Coro* coro);
 void coro_yield(void* ctx);
 #+end_src
 
-Coroutines are not allowed to return, they must use ~coro_yield~.
+When coroutine is done, return from the coroutine function. The ~coro_start~ or ~coro_continue~ functions will then return ~0~.
 
-Don't reuse the same Coro struct for two subsequent ~coro_start~.
+Don't reuse the same Coro struct for two subsequent ~coro_start~ unless the first has finished.
 
 *** Calling into a coroutine
 

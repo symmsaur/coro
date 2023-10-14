@@ -19,7 +19,12 @@ coro_start:
     mov rax, rsi
     mov rsi, rdx
     call rax
-    ;; Returning happens from coro_yield.
+    ;; If the coroutine yields we return through coro_yield.
+    ;; If the coroutine function returns we end up here.
+    ;; The coroutine is then finished.
+    mov rax, 0                  ; Signal finished.
+    jmp caller_return
+
 
     global coro_continue
 ;;; Continue coroutine
@@ -46,11 +51,13 @@ coro_continue:
 coro_yield:
     ;; Push registers coroutine stack to be able to restore when continuing.
     push rbp
+    mov rax, 1                  ; Signal continue.
 
+caller_return:                  ; Return already in rax.
     ;; Swap stack pointers.
-    mov rax, [rdi]
+    mov rdx, [rdi]
     mov [rdi], rsp
-    mov rsp, rax
+    mov rsp, rdx
 
     ;; Restore registers from caller stack.
     pop rbp
