@@ -1,6 +1,6 @@
 #+title: Coro
 
-(introduction)
+Coroutines are neat.
 
 * Coroutines in C
 
@@ -66,6 +66,23 @@ void coro_yield();
 #+end_src
 
 When finished the coroutine function can simply return.
+
+*** Calling into a coroutine
+
+The flow when first calling a coroutine will be:
+1. Set up arguments, stack in ~coro_start~.
+2. Jump into coroutine function.
+3. Call ~coro_yield~.
+4. Jump back to ~coro_start~.
+5. Return
+
+When continuing it is similar:
+1. Set up stack in ~coro_continue~.
+2. Jump back into ~coro_yield~.
+3. Return from ~coro_yield~ to coroutine function.
+4. Call ~coro_yield~.
+5. Jump back to ~coro_continue~.
+6. Return
 
 ** Some assembly pitfalls
 
