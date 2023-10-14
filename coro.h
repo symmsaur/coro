@@ -16,3 +16,5 @@ int coro_continue(Coro* coro);
 
 // Yield execution to caller
 void coro_yield(void* ctx);
+// Return execution to caller
+void coro_return(void* ctx);

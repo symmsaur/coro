@@ -76,9 +76,11 @@ int coro_continue(Coro* coro);
 #+begin_src c
 // Yield execution to caller
 void coro_yield(void* ctx);
+// Return execution to caller
+void coro_return(void* ctx);
 #+end_src
 
-When coroutine is done, return from the coroutine function. The ~coro_start~ or ~coro_continue~ functions will then return ~0~.
+When coroutine is done, return from the coroutine function using ~coro_return~. Returning normally from the coroutine function is not allowed. The ~coro_start~ or ~coro_continue~ functions will then return ~0~.
 
 Don't reuse the same Coro struct for two subsequent ~coro_start~ unless the first has finished.
 

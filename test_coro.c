@@ -11,8 +11,8 @@ void generator(void* ctx, void* output_raw) {
       *(int*)output_raw = i;
       coro_yield(ctx);
     }
-    /* FIXME: Segfaults when adding this! */
-    /* printf("Generator finished\n"); */
+    printf("Generator finished\n");
+    coro_return(ctx);
 }
 
 void test_generator() {
