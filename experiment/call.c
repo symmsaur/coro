@@ -1,4 +1,4 @@
-#include "test_add.h"
+#include "add.h"
 
 int main() {
     int res = 7;

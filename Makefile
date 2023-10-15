@@ -1,29 +1,46 @@
-##
-# coro
-#
-# @file
-# @version 0.1
+all: build/test_coro experiment
+.PHONY: all
+
+clean: build
+	rm -rf build
+.PHONY: clean
+
+rebuild: clean all
+
+build:
+	mkdir -p build
 
 build/test_coro: test_coro.c coro.h build/coro_asm.o build/coro.o
+	mkdir -p build
 	cc build/coro.o build/coro_asm.o test_coro.c -o build/test_coro -g
 
 build/coro_asm.o: coro_asm.s
+	mkdir -p build
 	nasm -f elf64 -o build/coro_asm.o coro_asm.s
 
 build/coro.o: coro.c
+	mkdir -p build
 	cc -c coro.c -o build/coro.o -g
 
-build/test_call_asm: test_call_asm.c build/call.o
-	cc build/call.o test_call_asm.c -o build/test_call_asm -g
+experiment: \
+		build/experiment/call_asm \
+		build/experiment/call_asm \
+		build/experiment/call \
+		build/experiment/add.o
+.PHONY: experiment
 
-build/call.o: call.s
-	nasm -f elf64 -o build/call.o call.s
+build/experiment/call_asm: experiment/call_asm.c build/experiment/call.o
+	mkdir -p build/experiment
+	cc build/experiment/call.o experiment/call_asm.c -o build/experiment/call_asm -g
 
-build/test_call: build/test_add.o test_call.c
-	cc build/test_add.o test_call.c -o build/test_call -masm=intel -g
+build/experiment/call.o: experiment/call.s
+	mkdir -p build/experiment
+	nasm -f elf64 -o build/experiment/call.o experiment/call.s
 
-build/test_add.o: test_add.c test_add.h
-	cc -c test_add.c -o build/test_add.o -g
+build/experiment/call: build/experiment/add.o experiment/call.c
+	mkdir -p build/experiment
+	cc build/experiment/add.o experiment/call.c -o build/experiment/call -masm=intel -g
 
-
-# end
+build/experiment/add.o: experiment/add.c experiment/add.h
+	mkdir -p build/experiment
+	cc -c experiment/add.c -o build/experiment/add.o -g
