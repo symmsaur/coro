@@ -1,4 +1,4 @@
-all: build/test/test_coro experiment
+all: build/test/test_coro build/test/test_bench experiment
 .PHONY: all
 
 clean:
@@ -11,13 +11,17 @@ build/test/test_coro: test/test_coro.c coro.h build/coro_asm.o build/coro.o
 	mkdir -p build/test
 	cc -I . build/coro.o build/coro_asm.o test/test_coro.c -o build/test/test_coro -g
 
+build/test/test_bench: test/test_bench.c coro.h build/coro_asm.o build/coro.o
+	mkdir -p build/test
+	cc -I . build/coro.o build/coro_asm.o test/test_bench.c -o build/test/test_bench -g -O3
+
 build/coro_asm.o: coro_asm.s
 	mkdir -p build
 	nasm -f elf64 -o build/coro_asm.o coro_asm.s
 
 build/coro.o: coro.c coro.h
 	mkdir -p build
-	cc -c coro.c -o build/coro.o -g
+	cc -c coro.c -o build/coro.o -g -O3
 
 experiment: \
 		build/experiment/call_asm \
