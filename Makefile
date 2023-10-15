@@ -7,9 +7,6 @@ clean: build
 
 rebuild: clean all
 
-build:
-	mkdir -p build
-
 build/test_coro: test_coro.c coro.h build/coro_asm.o build/coro.o
 	mkdir -p build
 	cc build/coro.o build/coro_asm.o test_coro.c -o build/test_coro -g
