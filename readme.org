@@ -15,8 +15,9 @@ We use C for simplicity. No name mangling and standard calling conventions. This
 You will need a C compiler (~gcc~ is tested, ~clang~ is probably ok), ~make~, and ~nasm~.
 
 #+begin_src bash
-make
-build/test_coro
+make all
+build/test/test_coro
+build/test/test_bench
 #+end_src
 
 * Calling a function from assembly
