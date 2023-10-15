@@ -21,7 +21,7 @@ build/coro_asm.o: coro_asm.s
 
 build/coro.o: coro.c coro.h
 	mkdir -p build
-	cc -c coro.c -o build/coro.o -g -O3
+	cc -c coro.c -o build/coro.o -g
 
 experiment: \
 		build/experiment/call_asm \
