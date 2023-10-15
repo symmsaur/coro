@@ -107,3 +107,7 @@ When continuing it is similar:
 Make sure which dialect you're using. ~gcc~ defaults to AT&T syntax while Intel syntax is getting more popular. Use the flag ~-masm=intel~ to use Intel syntax. If you do it wrong you will get strange errors.
 
 Using separate assembly routines is easier than inline assembly. Only the calling convention must be upheld, no need to worry about other registers etc. that could get clobbered.
+
+Since the stack is swapped it's important to keep track of which stack is currently active. For example when using the ~pop~ instruction.
+
+Consider the calling convention and which registers are expected to be preserved, or not.
