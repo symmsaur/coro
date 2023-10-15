@@ -1,21 +1,21 @@
-all: build/test_coro experiment
+all: build/test/test_coro experiment
 .PHONY: all
 
-clean: build
+clean:
 	rm -rf build
 .PHONY: clean
 
 rebuild: clean all
 
-build/test_coro: test_coro.c coro.h build/coro_asm.o build/coro.o
-	mkdir -p build
-	cc build/coro.o build/coro_asm.o test_coro.c -o build/test_coro -g
+build/test/test_coro: test/test_coro.c coro.h build/coro_asm.o build/coro.o
+	mkdir -p build/test
+	cc -I . build/coro.o build/coro_asm.o test/test_coro.c -o build/test/test_coro -g
 
 build/coro_asm.o: coro_asm.s
 	mkdir -p build
 	nasm -f elf64 -o build/coro_asm.o coro_asm.s
 
-build/coro.o: coro.c
+build/coro.o: coro.c coro.h
 	mkdir -p build
 	cc -c coro.c -o build/coro.o -g
 
